@@ -1,122 +1,240 @@
-# E-commerce Backend API — Deco Cerámicas
+ Deco Ceramicas Backend
 
-A robust RESTful API built with **vanilla Node.js**, **TypeScript**, and **MySQL**, following **Clean Architecture** principles for maintainability and scalability.
+A RESTful API backend for a ceramics decoration e-commerce platform, built with TypeScript and Node.js following Clean Architecture principles.
+
+## 📋 Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [API Endpoints](#api-endpoints)
+- [Architecture](#architecture)
+- [Development](#development)
+
+## 🎯 Overview
+
+This backend service provides product management functionality for a ceramics decoration store. It follows Clean Architecture principles, ensuring separation of concerns and maintainability.
 
 ## ✨ Features
 
-- 🏗️ Clean Architecture implementation
-- 📦 Product catalog by category
-- 💾 MySQL database integration with mysql2/promise
-- ✅ Error handling
-- 🚀 RESTful API design
-- 🔧 Built with vanilla Node.js (no Express)
+- **Product Retrieval**: Get products by ID or category
+- **Category Filtering**: Filter products by predefined categories
+- **Stock Management**: Built-in stock tracking and availability checks
+- **Clean Architecture**: Domain-driven design with clear layer separation
+- **Type Safety**: Full TypeScript implementation with strict type checking
 
-## 🧰 Tech Stack
+## 🛠 Tech Stack
 
-- **Node.js (vanilla)** - Runtime environment with native HTTP module
-- **TypeScript** - Static typing
-- **MySQL** - Relational database
-- **mysql2/promise** - MySQL client with Promise support
-- **Clean Architecture** - Software design pattern
+- **Runtime**: Node.js
+- **Language**: TypeScript
+- **Database**: MySQL (via mysql2)
+- **HTTP Server**: Native Node.js HTTP module
+- **Environment**: dotenv
+- **CORS**: Enabled for cross-origin requests
 
-## 📦 Getting Started
+## 📁 Project Structure
 
-### Prerequisites
+```
+src/
+├── adapter/
+│   └── mappers/          # Data transformation mappers
+├── application/
+│   └── product/          # Use cases (business logic)
+├── domain/
+│   ├── entities/         # Domain entities
+│   └── repositories/     # Repository interfaces
+├── infraestructure/
+│   ├── db/               # Database connection
+│   ├── factory/          # Repository factory
+│   ├── http/
+│   │   └── routes/       # HTTP route handlers
+│   └── repositories/     # Repository implementations
+├── shared/               # Shared DTOs and types
+└── server.ts             # Application entry point
+```
 
-- Node.js **v18+**
+## 📦 Prerequisites
+
+- Node.js (v18 or higher recommended)
 - npm or yarn
-- MySQL **v8.0+**
+- MySQL database server
+- Access to a MySQL database with products and categories tables
 
-### Installation
+## 🚀 Installation
+
+1. Clone the repository:
 ```bash
-# Clone the repository
-git clone https://github.com/Camilo-tsx/be-deco-ceramicas
-cd be-deco-ceramicas
+git clone https://github.com/Camilo-tsx/deco-ceramicas-be.git
+cd deco-ceramicas-be
+```
 
-# Install dependencies
+2. Install dependencies:
+```bash
 npm install
+```
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
+## ⚙️ Configuration
 
-# Start development server
+Create a `.env` file in the root directory with the following variables:
+
+```env
+DB_HOST=localhost
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
+DB_NAME=your_database_name
+DB_PORT=3306
+```
+
+**Required Environment Variables:**
+- `DB_HOST`: MySQL server host
+- `DB_USER`: MySQL username
+- `DB_PASSWORD`: MySQL password
+- `DB_NAME`: Database name
+- `DB_PORT`: MySQL port (optional, defaults to 3306)
+
+## 💻 Usage
+
+### Development Mode
+
+Run the server in development mode with hot-reload:
+
+```bash
 npm run dev
 ```
 
-### Environment Variables
+The server will start on port **3005** by default.
 
-Create a `.env` file in the root directory:
-```env
-PORT=3000
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=your_user
-DB_PASSWORD=your_password
-DB_NAME=deco_ceramicas
-NODE_ENV=development
-```
+### Production Mode
 
-## 📜 Available Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Compile TypeScript to JavaScript |
-| `npm start` | Start production server |
-| `npm test` | Run tests |
-| `npm run lint` | Run ESLint |
-
-
-## 🗺️ API Endpoints
-
-### Products
-
-- `GET /api/products/category/:category` - Get all products by category
-- `GET /api/products/:id` - Get product by ID
-
-### Example Requests
+1. Build the project:
 ```bash
-# Get products by category
-curl http://localhost:3000/api/products/category/ceramics
-
-# Get specific product
-curl http://localhost:3000/api/products/123
+npm run build
 ```
 
-## 🏗️ Clean Architecture Layers
+2. Start the server:
+```bash
+npm start
+```
+
+## 🔌 API Endpoints
+
+### Base URL
+```
+http://localhost:3005
+```
+
+### Get Product by ID
+Retrieve a single product by its ID.
+
+**Endpoint:** `GET /api/products/:id`
+
+**Example:**
+```bash
+GET /api/products/1
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "name": "Product Name",
+  "price": 29.99,
+  "stock": 10,
+  "category": "DECO HOME",
+  "imgUrl": "https://example.com/image.jpg",
+  "slug": "product-name",
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+**Error Responses:**
+- `404 Not Found`: Product not found
+- `500 Internal Server Error`: Server error
+
+### Get Products by Category
+Retrieve all products in a specific category.
+
+**Endpoint:** `GET /api/products/category/:category`
+
+**Valid Categories:**
+- `DECO HOME`
+- `DECO ARTE`
+- `COCINA`
+- `ACCESORIOS`
+
+**Example:**
+```bash
+GET /api/products/category/DECO%20HOME
+```
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "name": "Product Name",
+    "price": 29.99,
+    "stock": 10,
+    "category": "DECO HOME",
+    "imgUrl": "https://example.com/image.jpg",
+    "slug": "product-name",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+]
+```
+
+**Error Responses:**
+- `400 Bad Request`: Invalid category
+- `404 Not Found`: No products found in category
+- `500 Internal Server Error`: Server error
+
+## 🏗 Architecture
+
+This project follows **Clean Architecture** principles with the following layers:
 
 ### Domain Layer
-Contains the core business logic and entities (Product). Independent of any external frameworks or databases.
+- **Entities**: Core business objects (e.g., `Product`)
+- **Repositories**: Interfaces defining data access contracts
 
 ### Application Layer
-Contains application services that orchestrate use cases and business logic.
+- **Use Cases**: Business logic implementations (e.g., `getProductById`, `getProductByCategory`)
 
 ### Infrastructure Layer
-Handles database concerns including MySQL connection using `mysql2/promise` and repository implementations.
+- **Database**: MySQL connection and configuration
+- **Repositories**: Concrete implementations of repository interfaces
+- **HTTP**: Route handlers and server setup
+- **Factory**: Dependency injection for repositories
 
-### Adapters Layer
-Handles HTTP communication with the outside world. 
+### Adapter Layer
+- **Mappers**: Transform data between layers (Domain ↔ DTO ↔ Database)
 
 ### Shared Layer
-DTOs
+- **DTOs**: Data Transfer Objects for API communication
 
-## 🔌 Database Connection
+## 🧪 Development
 
-The project uses `mysql2/promise` for async/await MySQL operations:
-```typescript
-import mysql, { ConnectionOptions } from "mysql2/promise";
+### Available Scripts
 
-const config: ConnectionOptions = {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: Number(process.env.DB_PORT) || 3306,
-};
+- `npm run dev`: Start development server with hot-reload
+- `npm run build`: Compile TypeScript to JavaScript
+- `npm start`: Run the production build
+- `npm test`: Run tests (if configured)
 
-export const db = await mysql.createConnection(config);
-```
+### Database Schema
+
+The application expects a MySQL database with the following structure:
+
+- **products** table with columns: `id`, `product_name`, `price`, `stock`, `category_id`, `img_url`, `slug`, `created_at`, `updated_at`
+- **categories** table with columns: `id`, `category_name`
+
+Products are joined with categories to retrieve category names.
 
 ## 🗺️ Roadmap
 
@@ -130,11 +248,5 @@ Future implementations planned for this project:
 - [ ] File upload service (product images)
 - [ ] Redis caching layer
 
-## 📝 Notes
 
-This project follows **Clean Architecture** principles to ensure:
-- **Independence**: Business logic is independent of frameworks and databases
-- **Testability**: Easy to test with mocked dependencies
-- **Maintainability**: Clear separation of concerns
-- **Scalability**: Easy to add new features without affecting existing code
 
